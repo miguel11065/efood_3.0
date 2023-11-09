@@ -9,7 +9,7 @@ type Props = {
 const ProfileList = ({ image, title, description }: Props) => {
   const getDescription = (description: string) => {
     if (description.length > 130) {
-      return description.slice(0, 130) + '...'
+      return description.slice(0, 120) + '...'
     }
   }
   return (

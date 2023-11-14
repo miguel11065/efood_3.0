@@ -1,11 +1,21 @@
 import styled from 'styled-components'
-import { cores } from '../../styles'
+import { breakpoints, cores } from '../../styles'
 
 export const List = styled.ul`
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 32px;
   margin-top: 56px;
+
+  @media (max-width: ${breakpoints.desktop}) {
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+  }
+  @media (max-width: ${breakpoints.tablet}) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
 `
 
 export const Modal = styled.div`
@@ -18,6 +28,12 @@ export const Modal = styled.div`
   display: none;
   justify-content: center;
   align-items: center;
+
+  @media (max-width: ${breakpoints.tablet}) {
+    align-items: flex-start;
+    padding-top: 24px;
+    align-items: center;
+  }
 
   &.visivel {
     display: flex;
@@ -41,6 +57,15 @@ export const ModalContent = styled.div`
   display: flex;
   z-index: 1;
 
+  @media (max-width: ${breakpoints.desktop}) {
+    max-width: 90%;
+    height: 600px;
+  }
+
+  @media (max-width: ${breakpoints.tablet}) {
+    flex-direction: column;
+  }
+
   > div {
     img {
       width: 280px;
@@ -53,6 +78,11 @@ export const ModalContent = styled.div`
 export const ModalContainer = styled.div`
   display: flex;
   flex-direction: column;
+
+  @media (max-width: ${breakpoints.tablet}) {
+    max-width: 90%;
+    align-itens: center;
+  }
 
   h4 {
     margin-top: 32px;
@@ -78,7 +108,7 @@ export const Botao = styled.button`
   font-weight: bold;
   color: ${cores.indianRed};
   cursor: pointer;
-  margin-top: 60px;
+  margin-top: 16px;
 `
 
 export const Fechar = styled.img`

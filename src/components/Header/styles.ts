@@ -1,4 +1,5 @@
 import styled from 'styled-components'
+import { breakpoints } from '../../styles'
 
 export const Imagem = styled.div`
   width: 100%;
@@ -22,4 +23,10 @@ export const Title = styled.h2`
   font-weight: 00;
   line-height: 40px;
   text-align: center;
+
+  @media (max-width: ${breakpoints.tablet}) {
+    max-width: 80%;
+    margin-top: 80px;
+    font-size: 25px;
+  }
 `

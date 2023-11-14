@@ -10,6 +10,8 @@ import {
 } from './styles'
 import { PratoLista } from '../../pages/Home'
 import Pratos from '../Pratos'
+import { useDispatch } from 'react-redux'
+import { add, open } from '../../store/reducers/cart'
 
 type Props = {
   items: PratoLista[]
@@ -18,7 +20,7 @@ interface Lista extends PratoLista {
   isVisible: boolean
 }
 
-const formatPrice = (preco = 0) => {
+export const formatPrice = (preco = 0) => {
   return new Intl.NumberFormat('pt-br', {
     style: 'currency',
     currency: 'BRL'
@@ -46,6 +48,13 @@ const ProfileList = ({ items }: Props) => {
       porcao: '',
       preco: 0
     })
+  }
+
+  const dispatch = useDispatch()
+
+  const addToCart = (item: PratoLista) => {
+    dispatch(add(item))
+    dispatch(open())
   }
 
   return (
@@ -83,7 +92,9 @@ const ProfileList = ({ items }: Props) => {
             <h4>{modal.nome}</h4>
             <p>{modal.descricao}</p>
             <span>Rende de {modal.porcao}</span>
-            <Botao>Adicionar ao carrinho - {formatPrice(modal.preco)}</Botao>
+            <Botao onClick={() => addToCart(modal)}>
+              Adicionar ao carrinho - {formatPrice(modal.preco)}
+            </Botao>
           </ModalContainer>
           <Fechar src={fechar} onClick={() => closeModal()} />
         </ModalContent>

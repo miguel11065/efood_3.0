@@ -24,7 +24,6 @@ export const GlobalCss = createGlobalStyle`
 
   body {
     background-color: ${cores.floralWhite};
-    color: ${cores.indianRed};
   }
 
   .container {

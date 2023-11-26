@@ -55,6 +55,15 @@ const ProfileList = ({ items }: Props) => {
   const addToCart = (item: PratoLista) => {
     dispatch(add(item))
     dispatch(open())
+    setModal({
+      isVisible: false,
+      id: 0,
+      foto: '',
+      nome: '',
+      descricao: '',
+      porcao: '',
+      preco: 0
+    })
   }
 
   return (

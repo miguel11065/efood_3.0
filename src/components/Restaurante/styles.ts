@@ -7,6 +7,7 @@ export const Card = styled.div`
 
 export const CardContainer = styled.div`
   border: solid 1px ${cores.indianRed};
+  color: ${cores.indianRed};
   border-top: none;
   padding: 8px;
 `

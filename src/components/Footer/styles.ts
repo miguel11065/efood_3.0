@@ -28,4 +28,5 @@ export const SocialContainer = styled.div`
 
 export const Texto = styled.p`
   font-size: 10px;
+  color: ${cores.indianRed};
 `

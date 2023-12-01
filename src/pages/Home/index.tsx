@@ -1,6 +1,8 @@
+import { PulseLoader } from 'react-spinners'
 import Header from '../../components/Header'
 import ListaRestaurante from '../../components/ListaRestaurantes'
 import { useGetRestaurantesQuery } from '../../services/api'
+import Loader from '../../components/Loader'
 
 export interface PratoLista {
   id: number
@@ -32,7 +34,7 @@ const Home = () => {
       </>
     )
   }
-  return <h3>Carregando...</h3>
+  return <Loader />
 }
 
 export default Home

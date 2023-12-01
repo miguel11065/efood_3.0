@@ -70,6 +70,12 @@ export const Sidebar = styled.aside`
   &.is-closed {
     display: none;
   }
+
+  .empty-cart {
+    font-size: 14px;
+    line-height: 22px;
+    text-align: center;
+  }
 `
 
 export const InputGroup = styled.div`

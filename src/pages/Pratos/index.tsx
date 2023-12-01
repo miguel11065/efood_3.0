@@ -3,6 +3,8 @@ import HeaderRestaurante from '../../components/HeaderRestaurante'
 import HeroRestaurante from '../../components/HeroRestaurante'
 import ListaPratos from '../../components/ListaPratos'
 import { useGetPratosQuery } from '../../services/api'
+import { PulseLoader } from 'react-spinners'
+import Loader from '../../components/Loader'
 
 const ProductPage = () => {
   const { id } = useParams()
@@ -10,7 +12,7 @@ const ProductPage = () => {
   const { data: restaurante } = useGetPratosQuery(id!)
 
   if (!restaurante) {
-    return <h3>Carregando...</h3>
+    return <Loader />
   }
   return (
     <>

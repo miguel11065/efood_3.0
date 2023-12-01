@@ -11,12 +11,14 @@ import {
 } from './styles'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootReducer } from '../../store'
-import { close, remove } from '../../store/reducers/cart'
+import { clear, close, remove } from '../../store/reducers/cart'
 import { formatPrice } from '../ListaPratos'
 import { useState } from 'react'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
 import { usePurchaseMutation } from '../../services/api'
+import { useNavigate } from 'react-router-dom'
+import InputMask from 'react-input-mask'
 
 const Cart = () => {
   const { isOpen, items } = useSelector((state: RootReducer) => state.cart)
@@ -25,9 +27,10 @@ const Cart = () => {
   const [purchaseData, setPurchaseData] = useState(false)
   const [paymentData, setPaymentData] = useState(false)
   const [checkout, setCheckout] = useState(false)
+  const [emptyCart, setEmptyCart] = useState(false)
+  const navigate = useNavigate()
 
-  const [purchase, { isLoading, isSuccess, isError, data }] =
-    usePurchaseMutation()
+  const [purchase, { isSuccess, data }] = usePurchaseMutation()
 
   const dispatch = useDispatch()
 
@@ -129,7 +132,7 @@ const Cart = () => {
 
   const getTotalPrice = () => {
     return items.reduce((acumulador, valorAtual) => {
-      return (acumulador += valorAtual.preco!)
+      return (acumulador += valorAtual.preco)
     }, 0)
   }
 
@@ -146,8 +149,16 @@ const Cart = () => {
   }
 
   const goToPayment = () => {
-    setPurchaseData(false)
-    setPaymentData(true)
+    if (
+      !form.errors.recipient &&
+      !form.errors.address &&
+      !form.errors.city &&
+      !form.errors.cep &&
+      !form.errors.houseNumber
+    ) {
+      setPurchaseData(false)
+      setPaymentData(true)
+    }
   }
 
   const backToPurchase = () => {
@@ -156,39 +167,56 @@ const Cart = () => {
   }
 
   const goToCheckout = () => {
-    setPaymentData(false)
-    setCheckout(true)
+    if (
+      !form.errors.cardName &&
+      !form.errors.cardNumber &&
+      !form.errors.cardCode &&
+      !form.errors.expireMonth &&
+      !form.errors.expireYear
+    ) {
+      setPaymentData(false)
+      setCheckout(true)
+      dispatch(clear())
+    }
   }
 
   const finishPurchase = () => {
     setCart(true)
     setCheckout(false)
     closeCart()
+    setEmptyCart(false)
+    navigate('/')
   }
 
   return (
     <CartContainer className={isOpen ? 'is-open' : ''}>
       <Overlay onClick={closeCart} />
       <Sidebar className={cart ? '' : 'is-closed'}>
-        <ul>
-          {items.map((item) => (
-            <CartItem key={item.id}>
-              <img src={item.foto} />
-              <div>
-                <h3>{item.nome}</h3>
-                <Preco>{formatPrice(item.preco)}</Preco>
-                <button onClick={() => removeItem(item.id)} type="button" />
-              </div>
-            </CartItem>
-          ))}
-        </ul>
-        <Total>
-          <h3>Valor total</h3>
-          <h3>{formatPrice(getTotalPrice())}</h3>
-        </Total>
-        <Botao type="button" onClick={goToPurchase}>
-          Continuar com a entrega
-        </Botao>
+        {items.length > 0 ? (
+          <>
+            <ul>
+              {items.map((item) => (
+                <CartItem key={item.id}>
+                  <img src={item.foto} alt={item.nome} />
+                  <div>
+                    <h3>{item.nome}</h3>
+                    <Preco>{formatPrice(item.preco)}</Preco>
+                  </div>
+                  <button onClick={() => removeItem(item.id)} />
+                </CartItem>
+              ))}
+            </ul>
+            <Total>
+              Valor total <span>{formatPrice(getTotalPrice())}</span>
+            </Total>
+            <Botao onClick={goToPurchase}>Continuar com a entrega</Botao>
+          </>
+        ) : (
+          <p className="empty-cart">
+            O carrinho está vazio, adcione pelo menos um item para continuar com
+            a compra.
+          </p>
+        )}
       </Sidebar>
       <Sidebar className={purchaseData ? '' : 'is-closed'}>
         <Titulo>Entrega</Titulo>
@@ -196,111 +224,126 @@ const Cart = () => {
           <div>
             <label htmlFor="recipient">Quem irá receber</label>
             <input
-              id="recipient"
               type="text"
               name="recipient"
+              id="recipient"
               value={form.values.recipient}
               onChange={form.handleChange}
               onBlur={form.handleBlur}
+              className={getErrorMessage('recipient') ? 'error' : ''}
             />
             <small>{getErrorMessage('recipient', form.errors.recipient)}</small>
           </div>
           <div>
             <label htmlFor="address">Endereço</label>
             <input
-              id="address"
               type="text"
               name="address"
+              id="address"
               value={form.values.address}
               onChange={form.handleChange}
               onBlur={form.handleBlur}
+              className={getErrorMessage('address') ? 'error' : ''}
             />
             <small>{getErrorMessage('address', form.errors.address)}</small>
           </div>
           <div>
             <label htmlFor="city">Cidade</label>
             <input
-              id="city"
               type="text"
               name="city"
+              id="city"
               value={form.values.city}
               onChange={form.handleChange}
               onBlur={form.handleBlur}
+              className={getErrorMessage('city') ? 'error' : ''}
             />
             <small>{getErrorMessage('city', form.errors.city)}</small>
           </div>
           <InputGroup>
             <div>
               <label htmlFor="cep">CEP</label>
-              <input
-                id="cep"
+              <InputMask
                 type="text"
                 name="cep"
+                id="cep"
                 value={form.values.cep}
                 onChange={form.handleChange}
                 onBlur={form.handleBlur}
+                className={getErrorMessage('cep') ? 'error' : ''}
+                mask="99999-999"
               />
               <small>{getErrorMessage('cep', form.errors.cep)}</small>
             </div>
             <div>
               <label htmlFor="houseNumber">Número</label>
               <input
-                id="houseNumber"
                 type="number"
                 name="houseNumber"
+                id="houseNumber"
                 value={form.values.houseNumber}
                 onChange={form.handleChange}
                 onBlur={form.handleBlur}
+                className={getErrorMessage('houseNumber') ? 'error' : ''}
               />
               <small>
                 {getErrorMessage('houseNumber', form.errors.houseNumber)}
               </small>
             </div>
           </InputGroup>
-          <div className="marginBottom">
+          <div>
             <label htmlFor="complement">Complemento (opcional)</label>
             <input
-              id="complement"
               type="text"
               name="complement"
+              id="complement"
               value={form.values.complement}
               onChange={form.handleChange}
               onBlur={form.handleBlur}
             />
           </div>
         </form>
-        <Botao type="button" onClick={goToPayment}>
-          Continuar com o pagamento
-        </Botao>
+        {form.dirty ? (
+          <Botao type="button" onClick={goToPayment}>
+            Continuar com pagamento
+          </Botao>
+        ) : (
+          ''
+        )}
         <Botao type="button" onClick={backToCart}>
-          Voltar para o carrinho
+          Voltar para carrinho
         </Botao>
       </Sidebar>
       <Sidebar className={paymentData ? '' : 'is-closed'}>
-        <Titulo>Pagamento - Valor a pagar R$ 200,00</Titulo>
+        <Titulo>
+          Pagamento - Valor a pagar {formatPrice(getTotalPrice())}
+        </Titulo>
         <form onSubmit={form.handleSubmit}>
           <div>
             <label htmlFor="cardName">Nome no cartão</label>
             <input
-              id="cardName"
               type="text"
               name="cardName"
+              id="cardName"
               value={form.values.cardName}
               onChange={form.handleChange}
               onBlur={form.handleBlur}
+              className={getErrorMessage('cardName') ? 'error' : ''}
             />
             <small>{getErrorMessage('cardName', form.errors.cardName)}</small>
           </div>
           <InputGroup>
             <div>
               <label htmlFor="cardNumber">Número do cartão</label>
-              <input
-                id="cardNumber"
-                name="cardNumber"
+              <InputMask
                 type="text"
+                name="cardNumber"
+                id="cardNumber"
                 value={form.values.cardNumber}
                 onChange={form.handleChange}
                 onBlur={form.handleBlur}
+                className={getErrorMessage('cardNumber') ? 'error' : ''}
+                mask="9999.9999.9999.9999"
               />
               <small>
                 {getErrorMessage('cardNumber', form.errors.cardNumber)}
@@ -309,27 +352,30 @@ const Cart = () => {
             <div>
               <label htmlFor="cardCode">CVV</label>
               <input
-                className="tamanhoCvv"
-                id="cardCode"
                 type="text"
                 name="cardCode"
+                id="cardCode"
                 value={form.values.cardCode}
                 onChange={form.handleChange}
                 onBlur={form.handleBlur}
+                className={`${
+                  getErrorMessage('cardCode') ? 'error ' : ''
+                }tamanhoCvv`}
               />
               <small>{getErrorMessage('cardCode', form.errors.cardCode)}</small>
             </div>
           </InputGroup>
-          <InputGroup className="marginBottom">
+          <InputGroup>
             <div>
               <label htmlFor="expireMonth">Mês de vencimento</label>
               <input
-                id="expireMonth"
                 type="text"
                 name="expireMonth"
+                id="expireMonth"
                 value={form.values.expireMonth}
                 onChange={form.handleChange}
                 onBlur={form.handleBlur}
+                className={getErrorMessage('expireMonth') ? 'error' : ''}
               />
               <small>
                 {getErrorMessage('expireMonth', form.errors.expireMonth)}
@@ -338,29 +384,30 @@ const Cart = () => {
             <div>
               <label htmlFor="expireYear">Ano de vencimento</label>
               <input
-                id="expireYear"
-                type="number"
+                type="text"
                 name="expireYear"
+                id="expireYear"
                 value={form.values.expireYear}
                 onChange={form.handleChange}
                 onBlur={form.handleBlur}
+                className={getErrorMessage('expireYear') ? 'error' : ''}
               />
               <small>
                 {getErrorMessage('expireYear', form.errors.expireYear)}
               </small>
             </div>
           </InputGroup>
+          <Botao type="submit" onClick={goToCheckout}>
+            Finalizar pagamento
+          </Botao>
+          <Botao type="button" onClick={backToPurchase}>
+            Voltar para a edição de endereço
+          </Botao>
         </form>
-        <Botao type="button" onClick={goToCheckout}>
-          Finalizar pagamento
-        </Botao>
-        <Botao type="button" onClick={backToPurchase}>
-          Voltar para a edição de endereço
-        </Botao>
       </Sidebar>
       {isSuccess ? (
         <Sidebar className={checkout ? '' : 'is-closed'}>
-          <Titulo>Pedido realizado - numero do pedido</Titulo>
+          <Titulo>Pedido realizado - {data.orderId}</Titulo>
           <p>
             Estamos felizes em informar que seu pedido já está em processo de
             preparação e, em breve, será entregue no endereço fornecido.
@@ -378,16 +425,11 @@ const Cart = () => {
             Esperamos que desfrute de uma deliciosa e agradável experiência
             gastronômica. Bom apetite!
           </p>
-          <Botao type="button" onClick={finishPurchase}>
-            Concluir
-          </Botao>
+          <Botao onClick={finishPurchase}>Concluir</Botao>
         </Sidebar>
       ) : (
-        <Sidebar>
-          <h4>Erro na compra</h4>
-          <Botao type="button" onClick={goToPayment}>
-            Voltar para a edição de pagamento
-          </Botao>
+        <Sidebar className={checkout ? '' : 'is-closed'}>
+          <h3>Erro na transação</h3>
         </Sidebar>
       )}
     </CartContainer>

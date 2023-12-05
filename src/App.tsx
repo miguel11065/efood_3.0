@@ -6,7 +6,6 @@ import Rotas from './routes'
 import { Provider } from 'react-redux'
 import { store } from './store'
 import Cart from './components/Cart'
-import Checkout from './pages/Checkout'
 
 function App() {
   return (

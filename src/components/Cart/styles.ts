@@ -54,6 +54,19 @@ export const Sidebar = styled.aside`
     padding: 0 8px;
     width: 100%;
     margin-bottom: 8px;
+
+    &.error {
+      border: 2px solid red;
+      color: red;
+    }
+  }
+
+  small {
+    font-size: 14px;
+  color: red;
+  font wheight: bold;
+  line-height: 22px;
+  margin-bottom: 8px;
   }
 
   p {

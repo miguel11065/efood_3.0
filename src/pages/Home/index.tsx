@@ -1,4 +1,3 @@
-import { PulseLoader } from 'react-spinners'
 import Header from '../../components/Header'
 import ListaRestaurante from '../../components/ListaRestaurantes'
 import { useGetRestaurantesQuery } from '../../services/api'
@@ -24,7 +23,7 @@ export type RestauranteLista = {
 }
 
 const Home = () => {
-  const { data: listaRestaurante, isLoading } = useGetRestaurantesQuery()
+  const { data: listaRestaurante } = useGetRestaurantesQuery()
 
   if (listaRestaurante) {
     return (

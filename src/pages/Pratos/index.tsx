@@ -3,7 +3,6 @@ import HeaderRestaurante from '../../components/HeaderRestaurante'
 import HeroRestaurante from '../../components/HeroRestaurante'
 import ListaPratos from '../../components/ListaPratos'
 import { useGetPratosQuery } from '../../services/api'
-import { PulseLoader } from 'react-spinners'
 import Loader from '../../components/Loader'
 
 const ProductPage = () => {

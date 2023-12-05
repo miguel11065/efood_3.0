@@ -70,7 +70,6 @@ const Cart = () => {
         .required('O campo é obrigatório'),
       cardCode: Yup.string()
         .min(3, 'O campo precisa ter 3 números')
-        .max(3, 'O campo precisa ter 3 números')
         .required('O campo é obrigatório'),
       expireMonth: Yup.string()
         .min(1, 'O campo precisa ter pelo menos 1 número')
@@ -186,7 +185,6 @@ const Cart = () => {
     closeCart()
     setEmptyCart(false)
     navigate('/')
-    window.location.reload()
   }
 
   return (
@@ -220,7 +218,7 @@ const Cart = () => {
         )}
       </Sidebar>
 
-      {isSuccess && data ? (
+      {isSuccess ? (
         <Sidebar className={checkout ? '' : 'is-closed'}>
           <Titulo>Pedido realizado - {data.orderId}</Titulo>
           <p>
@@ -401,7 +399,7 @@ const Cart = () => {
               <InputGroup>
                 <div>
                   <label htmlFor="expireMonth">Mês de vencimento</label>
-                  <input
+                  <InputMask
                     type="text"
                     name="expireMonth"
                     id="expireMonth"
@@ -409,6 +407,7 @@ const Cart = () => {
                     onChange={form.handleChange}
                     onBlur={form.handleBlur}
                     className={getErrorMessage('expireMonth') ? 'error' : ''}
+                    mask="99"
                   />
                   <small>
                     {getErrorMessage('expireMonth', form.errors.expireMonth)}
@@ -416,7 +415,7 @@ const Cart = () => {
                 </div>
                 <div>
                   <label htmlFor="expireYear">Ano de vencimento</label>
-                  <input
+                  <InputMask
                     type="text"
                     name="expireYear"
                     id="expireYear"
@@ -424,23 +423,20 @@ const Cart = () => {
                     onChange={form.handleChange}
                     onBlur={form.handleBlur}
                     className={getErrorMessage('expireYear') ? 'error' : ''}
+                    mask="9999"
                   />
                   <small>
                     {getErrorMessage('expireYear', form.errors.expireYear)}
                   </small>
                 </div>
               </InputGroup>
-            </form>
-            {form.dirty ? (
-              <Botao type="button" onClick={goToCheckout}>
+              <Botao type="submit" onClick={goToCheckout}>
                 Finalizar pagamento
               </Botao>
-            ) : (
-              ''
-            )}
-            <Botao type="button" onClick={backToPurchase}>
-              Voltar para a edição de endereço
-            </Botao>
+              <Botao type="button" onClick={backToPurchase}>
+                Voltar para a edição de endereço
+              </Botao>
+            </form>
           </Sidebar>
         </>
       )}
